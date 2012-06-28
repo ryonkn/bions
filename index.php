@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.3                       |
+// | BIONS -believe it or not , snort-  Version 0.3a                      |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -42,7 +42,7 @@ $dsn = array( 'phptype'    => DB_TYPE,
               'database'   => DB_NAME,
               'username'   => DB_USER, 
               'password'   => DB_PASS, 
-              'hostspce'   => DB_HOST,
+              'hostspec'   => DB_HOST,
               'proto_opts' => DB_OPTS ); 
 
 $db = DB::connect($dsn);
@@ -59,7 +59,7 @@ $alerts->SetCurrentTime($_SESSION['currenttime'][0], $now);
 $alerts->DbQuery($db);
 $htmldata['alertslist']   = $alerts->GetHTML();
 $htmldata['currentalert'] = $alerts->GetCurrentSigname();
-unset($alerts);
+$alerts->Destructor();
 
 // Get Sensors Name & id from DB
 $sensor = new SensorsList();
@@ -68,7 +68,7 @@ $sensor->SetCrrentSensor($sid);
 $sensor->SetCurrentTime($_SESSION['currenttime'][0], $now);
 $sensor->DbQuery($db);
 $htmldata['sensors'] = $sensor->GetHTML();
-unset($sensor);
+$sensor->Destructor();
 
 // Get TimeList
 $timelist = new TimeList();
@@ -78,7 +78,7 @@ $timelist->SetCurrentTime($_SESSION['currenttime'][0], $now);
 $timelist->Generate();
 $htmldata['timelist'] = $timelist->GetHTML();
 $htmldata['nowtime'] = $timelist->NowTime();
-unset($timelist);
+$timelist->Destructor();
 
 // Daily graph
 $daily = new BionsGraph('Daily');
@@ -92,7 +92,7 @@ $daily->DbQuery($db, 'hour', 23, 'G');
 $htmldata['dailygraph'] = $daily->GetHTML('graph');
 $htmldata['dailyfrom']  = $daily->GetHTML('from');
 $htmldata['dailyto']    = $daily->GetHTML('to');
-unset($daily);
+$daily->Destructor();
 
 // Weekly graph
 $weekly = new BionsGraph('Weekly');
@@ -106,7 +106,7 @@ $weekly->DbQuery($db, 'hour', 167, 'D');
 $htmldata['weeklygraph'] = $weekly->GetHTML('graph');
 $htmldata['weeklyfrom']  = $weekly->GetHTML('from');
 $htmldata['weeklyto']    = $weekly->GetHTML('to');
-unset($weekly);
+$weekly->Destructor();
 
 // Monthly graph
 $monthly = new BionsGraph('Monthly');
@@ -119,7 +119,7 @@ $monthly->DbQuery($db, 'day', 29, 'j');
 $htmldata['monthlygraph'] = $monthly->GetHTML('graph');
 $htmldata['monthlyfrom']  = $monthly->GetHTML('from');
 $htmldata['monthlyto']    = $monthly->GetHTML('to');
-unset($monthly);
+$monthly->Destructor();
 
 // Yearly graph
 $yearly = new BionsGraph('Yearly');
@@ -132,7 +132,7 @@ $yearly->DbQuery($db, 'month', 11, 'M');
 $htmldata['yearlygraph'] = $yearly->GetHTML('graph');
 $htmldata['yearlyfrom']  = $yearly->GetHTML('from');
 $htmldata['yearlyto']    = $yearly->GetHTML('to');
-unset($yearly);
+$yearly->Destructor();
 
 // DB disconnect
 $db->disconnect();

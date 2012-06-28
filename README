@@ -1,108 +1,117 @@
-              BIONS -believe it or not , snort- version 0.3
+              BIONS -believe it or not , snort- version 0.3a
 
               Copyright(C) 2004 Ryo Nakano <ryo@ryonkn.com>
 
+0.Introduction
 
-はじめに
+   BIONS  -believe it or not , snort- (BIONS) is the tool which
+   graph-izes the alert log of Snort which is IDS of an open source
+   per one day / one week / one month / one year, and is displayed
+   on a web browser. 
 
-BIONS -believe it or not , snort-(以下BIONS)は、オープンソースのIDSである
-Snort (http://www.snort.org/) のアラートログを1日/1週間/1ヶ月/1年単位で
-グラフ化し、Webブラウザに表示するツールです。また、過去24時間のアラート
-の回数をシグネイチャ別にカウントし表示します。
+   And, the number of times of the alert of the past 24 hours is counted
+   and displayed according to a signature. 
 
+1.License
 
-ライセンス
+   BIONS is freeware based on GNU GPL.
+   According to GPL, an change and redistribution are possible.
+   Please read COPYING to get a details.
+   For details, please read COPYING.
 
-BIONSはGNU GPLに準拠したフリーソフトウェアです。GPLに従い、改変および
-再配布が可能です。
-詳しくは、COPYING というファイルを参照してください。
-
-
-必要環境
+2.Required Environment
 
    *Snort (http://www.snort.org/)
-       outputプラグインとして、mysql か postgresqlを使用
+       MySQL or PostgreSQL is used as output plug-in.
 
    *PHP (http://www.php.net/)
-       ソースからインストールする場合は、./configure のオプションに、
-       --with-gd が必要です。また、RDBMSを利用する為、mysql か 
-       postgresqlを使用するオプションが必要です。詳しくは、
-       <?php phpinfo(); ?> 等で確認して下さい。
+       To install from the source, "--with-gd" is required
+       for the option of ./configure.
+       And, in order to use RDBMS, the option which uses
+       MySQL or PostgreSQL is required.
+       For details, please check by "<?php phpinfo(); ?>" etc.
 
    *Pear DB (http://pear.php.net/)
-       DB接続のクラスライブラリとして、PearのDBクラスを使用しています
+       DB class of Pear is used as a class library of DB connection.
 
    *jpgraph (http://www.aditus.nu/jpgraph/)
-       PHPで、グラフを作成するクラスライブラリです。
+       It is the class library which creates a graph by PHP.
 
    *GD (http://www.boutell.com/gd/)
-       GDは、画像を作成するライブラリです。
+       GD is the library which creates a picture.
 
    *MySQL (http://www.mysql.com/)
    *PostgreSQL (http://www.postgresql.org/)
 
+3.Install
 
-インストール
+   The installation means is explained.
+   (Please check that Snort is installed normally and
+    being normally outputted to the database.)
 
-Snortがインストールされ、データベースに正常に出力されている事を前提に
-インストール方法を説明します。
+   First, extract BIONS archive to the directory
+   which can be referred to from on Web.
 
-Webにて閲覧可能なディレクトリに、BIONSを展開します。
+      $ tar xvzf bions-x.x.tar.gz
 
-$ tar xvzf bions-x.x.tar.gz
+   Then, extract jpgraph-1.xx.tar.gz to any directories.
 
-jpgraph-1.xx.tar.gz を、適当なディレクトリに展開します。
+      $ cd bions-x.x
+      $ tar xvzf ../jpgraph-1.xx.tar.gz
 
-$ cd bions-x.x
-$ tar xvzf ../jpgraph-1.xx.tar.gz
+4.Configuration
 
+   Edit the configuration file (bions_conf.php) of BIONS.
 
-設定
+   *Databases
 
-BIONSの設定ファイル(bions_conf.php)を編集します。
+      DB_TYPE
+         Database type which you use.
+         If you use PostgreSQL, set the "pgsql".
+         If you use MySQL, "mysql".
+         (Other databases are not supported.)
+      DB_SYNT
+         Database related syntax (it is usually "") .
+      DB_PROT
+         The connection method to database.
+         tcp/unix/unix()/unix(The path of a unix domain socket.)
+      DB_HOST
+         The address of the server in which database is working (localhost:3306 etc).
+         Set the blank when use unix domain socket.
+      DB_NAME
+        Database name.
+      DB_USER
+        User name to connect to the database.
+      DB_PASS
+        User password for connect to database (If it is not, set the "") .
+      DB_OPTS
+        Options to connect to the database (it is usually "") .
 
-*データベース関連の設定
-DB_TYPE
-        PostgreSQL = pgsql , MySQL = mysql
-DB_SYNT
-        データベース関連構文、通常は空白""で問題ありません。
-DB_PROT
-        DBへの接続方法 tcp/unix/unix()/unix(unixドメインソケットのパス)
-DB_HOST
-        DBが稼動しているサーバのアドレス(localhost:3306)等、unixドメインソケット接続の場合は空白
-DB_NAME
-        データベース名
-DB_USER
-        データベースへ接続する際のユーザ名
-DB_PASS
-        データベースへ接続する際のパスワード(設定してない場合は、"")
-DB_OPTS
-        データベースへ接続するオプション、通常は空白""で問題ありません。
+   *jpgraph
 
+      JPGRAPH_PATH
+        The path with which jpgraph.php exists.
 
-*jpgraphのインストールパス
-JPGRAPH_PATH
-        jpgraph.phpが存在するパス
+   *Sensors
 
-*センサー
-SENSORS
-        非固定IPで運用されている場合は、Sensorsが複数表示されます。
-        その場合は、"false"に設定すると、合計値のみを表示します。
-        また、snort.confのoutputプラグイン設定を 
-          output database: alert, postgresql, user=snort dbname=snort sensor_name=sensor1
-        とする事でも可能です。
+      SENSORS
+        When used by the non-fixing IP address, two or more Sensors(es) are displayed.
+        In that case, only a totalled value will be displayed if it is set as "false".
+        And, it is also possible to set up an output plug-in setup of snort.conf as follows.
 
+        output database: alert, postgresql, user=snort dbname=snort sensor_name=sensor1
 
-最新情報
+5.Latest Informations
 
-BIONSについての最新情報は、http://bions.ryonkn.com/
-をご確認ください。
+   Access to our webpage to get the latest information.
 
+        http://bions.ryonkn.com/
 
-フィードバック
-BIONSについての、ご意見・ご要望・バグレポートは、
-Ryo Nakano <ryo@ryonkn.com> までお願いします。
+6.Feedback
+   Please mail the opinion, demand, and bug report about BIONS
+   to the following mail address.
 
+        Ryo Nakano <ryo@ryonkn.com>.
 
--- 
+--
 Ryo Nakano / <ryo@ryonkn.com>

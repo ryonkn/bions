@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.3                       |
+// | BIONS -believe it or not , snort-  Version 0.3a                      |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -17,7 +17,7 @@ define("DB_PASS",            "snort");
 define("DB_OPTS",            "");
 
 // Jpgraph path
-define("JPGRAPH_PATH",       "jpgraph-1.14/src");
+define("JPGRAPH_PATH",       "jpgraph-1.16/src");
 
 // Many sensors
 define("SENSORS",            true);

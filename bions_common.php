@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.3                       |
+// | BIONS -believe it or not , snort-  Version 0.3a                      |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -603,6 +603,15 @@ class BionsCommon {
         }
     } // end func GetHTML
 
+    /**
+     * Object destructor
+     * @param   none
+     * @access  public
+     */
+    function Destructor()
+    {
+         $this = NULL;
+    } // end func Destructor
 } // end class BionsCommon
 
 

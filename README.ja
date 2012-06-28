@@ -1,0 +1,108 @@
+              BIONS -believe it or not , snort- version 0.3a
+
+              Copyright(C) 2004 Ryo Nakano <ryo@ryonkn.com>
+
+
+はじめに
+
+BIONS -believe it or not , snort-(以下BIONS)は、オープンソースのIDSである
+Snort (http://www.snort.org/) のアラートログを1日/1週間/1ヶ月/1年単位で
+グラフ化し、Webブラウザに表示するツールです。また、過去24時間のアラート
+の回数をシグネイチャ別にカウントし表示します。
+
+
+ライセンス
+
+BIONSはGNU GPLに準拠したフリーソフトウェアです。GPLに従い、改変および
+再配布が可能です。
+詳しくは、COPYING というファイルを参照してください。
+
+
+必要環境
+
+   *Snort (http://www.snort.org/)
+       outputプラグインとして、mysql か postgresqlを使用
+
+   *PHP (http://www.php.net/)
+       ソースからインストールする場合は、./configure のオプションに、
+       --with-gd が必要です。また、RDBMSを利用する為、mysql か 
+       postgresqlを使用するオプションが必要です。詳しくは、
+       <?php phpinfo(); ?> 等で確認して下さい。
+
+   *Pear DB (http://pear.php.net/)
+       DB接続のクラスライブラリとして、PearのDBクラスを使用しています
+
+   *jpgraph (http://www.aditus.nu/jpgraph/)
+       PHPで、グラフを作成するクラスライブラリです。
+
+   *GD (http://www.boutell.com/gd/)
+       GDは、画像を作成するライブラリです。
+
+   *MySQL (http://www.mysql.com/)
+   *PostgreSQL (http://www.postgresql.org/)
+
+
+インストール
+
+Snortがインストールされ、データベースに正常に出力されている事を前提に
+インストール方法を説明します。
+
+Webにて閲覧可能なディレクトリに、BIONSを展開します。
+
+$ tar xvzf bions-x.x.tar.gz
+
+jpgraph-1.xx.tar.gz を、適当なディレクトリに展開します。
+
+$ cd bions-x.x
+$ tar xvzf ../jpgraph-1.xx.tar.gz
+
+
+設定
+
+BIONSの設定ファイル(bions_conf.php)を編集します。
+
+*データベース関連の設定
+DB_TYPE
+        PostgreSQL = pgsql , MySQL = mysql
+DB_SYNT
+        データベース関連構文、通常は空白""で問題ありません。
+DB_PROT
+        DBへの接続方法 tcp/unix/unix()/unix(unixドメインソケットのパス)
+DB_HOST
+        DBが稼動しているサーバのアドレス(localhost:3306)等、unixドメインソケット接続の場合は空白
+DB_NAME
+        データベース名
+DB_USER
+        データベースへ接続する際のユーザ名
+DB_PASS
+        データベースへ接続する際のパスワード(設定してない場合は、"")
+DB_OPTS
+        データベースへ接続するオプション、通常は空白""で問題ありません。
+
+
+*jpgraphのインストールパス
+JPGRAPH_PATH
+        jpgraph.phpが存在するパス
+
+*センサー
+SENSORS
+        非固定IPで運用されている場合は、Sensorsが複数表示されます。
+        その場合は、"false"に設定すると、合計値のみを表示します。
+        また、snort.confのoutputプラグイン設定を 
+          output database: alert, postgresql, user=snort dbname=snort sensor_name=sensor1
+        とする事でも可能です。
+
+
+最新情報
+
+BIONSについての最新情報は、http://bions.ryonkn.com/
+をご確認ください。
+
+
+フィードバック
+BIONSについての、ご意見・ご要望・バグレポートは、
+Ryo Nakano <ryo@ryonkn.com> までお願いします。
+
+
+-- 
+Ryo Nakano / <ryo@ryonkn.com>
