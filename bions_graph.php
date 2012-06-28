@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.1                       |
+// | BIONS -believe it or not , snort-  Version 0.1a                      |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -14,7 +14,7 @@ require_once JPGRAPH_PATH."/jpgraph.php";
 require_once JPGRAPH_PATH."/jpgraph_line.php";
 
 // Get mode (Daily ,Weekly, Monthly ,Yearly)
-if ($_SERVER['REQUEST_METHOD'] == "GET" and ereg("^(Daily|Weekly|Monthly|Yearly)$", $_GET['mode'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'GET' and ereg("^(Daily|Weekly|Monthly|Yearly)$", $_GET['mode'])) {
     $mode = $_GET['mode'];
 }
 
@@ -23,6 +23,7 @@ session_start();
 
 $times  = $_SESSION[$mode]['times'];
 $alerts = $_SESSION[$mode]['alerts'];
+$hour = $_SESSION['currenttime']['hours'];
 
 // Unset $_SESSION
 unset($_SESSION[$mode]);
@@ -65,10 +66,9 @@ $plot->SetColor(COLOR);
 $plot->SetFillColor(FILLCOLOR);
 
 // Weekly Graph is 1 label/day ... I think that there is a better way.
-if ($mode == Weekly) {
-    $cnt = 23 - date("G");
-    $graph->xaxis->SetTextTickInterval(24, $cnt);
-    $times = array_slice($times,$cnt);
+if ($mode == 'Weekly') {
+    $graph->xaxis->SetTextTickInterval(24, 23 - $hour);
+    $times = array_slice($times,23 - $hour);
 }
 
 // Time label output

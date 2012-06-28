@@ -1,14 +1,16 @@
 h1 {
-	padding: 5px 30px 5px 30px;
-	border-right: solid 2px #333333;
-	border-bottom: solid 2px #333333;
-	background-color: #808080;
-	color: #FFFFFF;
-	text-decoration: underline;
+  padding: 5px 30px 5px 30px;
+  border-right: solid 2px #333333;
+  border-bottom: solid 2px #333333;
+  background-color: #808080;
+  color: #FFFFFF;
+  text-decoration: underline;
 }
+
 h1 span#sub {
-	font-size: 70%;
+  font-size: 70%;
 }
+
 h3 {
     margin: 10px,0px,0px,0px;
 }
@@ -67,10 +69,10 @@ td.alertlist {
 }
 
 .footer {
-	padding: 5px 30px;
-	border-right: solid 2px #333333;
-	border-bottom: solid 2px #333333;
-	background-color: #808080;
-	color: #FFFFFF;
-	margin-top: 20px;
+  padding: 5px 30px;
+  border-right: solid 2px #333333;
+  border-bottom: solid 2px #333333;
+  background-color: #808080;
+  color: #FFFFFF;
+  margin-top: 20px;
 }

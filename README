@@ -1,4 +1,4 @@
-              BIONS -believe it or not , snort- version 0.1
+              BIONS -believe it or not , snort- version 0.1a
 
               Copyright(C) 2004 Ryo Nakano <ryo@ryonkn.com>
 
@@ -22,7 +22,7 @@ BIONSはGNU GPLに準拠したフリーソフトウェアです。GPLに従い�
 
    *Snort (http://www.snort.org/)
        outputプラグインとして、mysql か postgresqlを使用
- 
+
    *PHP (http://www.php.net/)
        ソースからインストールする場合は、./configure のオプションに、
        --with-gd が必要です。また、RDBMSを利用する為、mysql か 
@@ -49,12 +49,12 @@ Snortがインストールされ、データベースに正常に出力されて
 
 Webにて閲覧可能なディレクトリに、BIONSを展開します。
 
-$ tar xvzf bions-0.1.tar.gz
+$ tar xvzf bions-x.x.tar.gz
 
-jpgraph-1.14.tar.gz を、適当なディレクトリに展開します。
+jpgraph-1.xx.tar.gz を、適当なディレクトリに展開します。
 
-$ cd bions-0.1
-$ tar xvzf ../jpgraph-1.14.tar.gz
+$ cd bions-x.x
+$ tar xvzf ../jpgraph-1.xx.tar.gz
 
 
 設定
@@ -89,7 +89,7 @@ BIONSについての最新情報は、http://bions.ryonkn.com/
 をご確認ください。
 
 
-7.フィードバック
+フィードバック
 BIONSについての、ご意見・ご要望・バグレポートは、
 Ryo Nakano <ryo@ryonkn.com> までお願いします。
 

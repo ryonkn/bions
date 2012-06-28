@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.1                       |
+// | BIONS -believe it or not , snort-  Version 0.1a                      |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -56,6 +56,8 @@ class BionsGraph extends BionsCommon {
         $this->_times['day']['e']   = 0;
         $this->_times['hour']['s']  = 0;
         $this->_times['hour']['e']  = 0;
+        $this->_fromtime            = '';
+        $this->_totime              = '';
         return true;
     } // end constructor
 
@@ -186,9 +188,9 @@ class BionsGraph extends BionsCommon {
         $_SESSION['graphcount']++;
         unset($data);
 
-        $this->_html[0] = '<img src="'.GRAPH_PHP.'?mode='.$this->_mode.'" alt="'.$this->_mode.' Graph" width="'.WIDTH.'" height="'.HEIGHT.'" />';
-        $this->_html[1] = $this->_fromtime;
-        $this->_html[2] = $this->_totime;
+        $this->_html['graph'] = '<img src="'.GRAPH_PHP.'?mode='.$this->_mode.'" alt="'.$this->_mode.' Graph" width="'.WIDTH.'" height="'.HEIGHT.'" />';
+        $this->_html['from'] = $this->_fromtime;
+        $this->_html['to'] = $this->_totime;
 
         return true;
     } // end func DbQuery
@@ -206,14 +208,14 @@ class AlertsList extends BionsCommon {
      * @var    int
      * @access private
      */
-    var $_time = '';
+    var $_time;
 
     /**
      * Current Signature name
      * @var    string
      * @access private
      */
-    var $_signame = '';
+    var $_signame;
 
     /**
      * Class constructor
@@ -223,15 +225,8 @@ class AlertsList extends BionsCommon {
     function AlertsList()
     {
         BionsCommon::BionsCommon();
-        $this->_html      = '<table summary="Alerts List" class="alertlist">'.
-                            '<thead><tr>'.
-                            '<th class="header">Signature Link</th>'.
-                            '<th class="header">Alert Message</th>'.
-                            '<th class="header">Classification</th>'.
-                            '<th class="header">Last 24 hours</th>'.
-                            '</tr></thead>'.
-                            '<tbody>';
-        $this->_time      = 0;
+        $this->_time    = 0;
+        $this->_signame = '';
         return true;
     } // end constructor
 
@@ -273,12 +268,15 @@ class AlertsList extends BionsCommon {
         $result = $db->getAll($sql);
 
         if(!DB::isError($result)) {
- 
-            $result[-1] = array(0, 'All Alerts', '&nbsp;', '&nbsp;', '&nbsp;');
+
+            $result[-1] = array(0, 'All Alerts', '&nbsp;', 'All Classification', '&nbsp;');
             $count = count($result) - 1;
 
             for ($i = -1 ; $i < $count ; $i++)
             {
+                $result[$i][1] = htmlspecialchars($result[$i][1], ENT_QUOTES);
+                $result[$i][3] = htmlspecialchars($result[$i][3], ENT_QUOTES);
+
                 $this->_html .= '<tr>';
 
                 if( $result[$i][2] > 0 and $result[$i][2] < 1000000 ) {
@@ -304,8 +302,6 @@ class AlertsList extends BionsCommon {
         } else {
            die ($result->getMessage());
         }
-
-        $this->_html .= "</tbody></table>";
         return true;
     } // end func DbQuery
 
@@ -318,7 +314,7 @@ class AlertsList extends BionsCommon {
      */
     function _GenerateTD($contents,$class = 'alertlist')
     {
-      $td = '<td class =  "'.$class.'">'.$contents.'</td>';
+      $td = '<td class = "'.$class.'">'.$contents.'</td>';
       return $td;
     } // end func _GenerateTD
 } // end class AlertsList
@@ -359,13 +355,15 @@ class SensorsList extends BionsCommon {
 
                 for ($i = -1 ; $i < $count ; $i++) {
 
-                    $name = $result[$i][1].'%'.$result[$i][2];
+                    $name = htmlspecialchars( $result[$i][1].'%'.$result[$i][2] , ENT_QUOTES);
 
+                    $this->_html .= '[';
                     if($this->_sensor == $result[$i][0]) {
-                        $this->_html .= '[ <span class="currentsensor">'.$name.'</span> ]&nbsp;&nbsp;';
+                        $this->_html .= '<span class="currentsensor">'.$name.'</span>';
                     } else {
-                        $this->_html .= '[ '.$this->_GenerateLink($name, $this->_signature, $result[$i][0]).' ]&nbsp;&nbsp;';
+                        $this->_html .= $this->_GenerateLink($name, $this->_signature, $result[$i][0]);
                     }
+                    $this->_html .= ']&nbsp;';
 
                 }
             } else {
@@ -486,9 +484,13 @@ class BionsCommon {
      * @access  public
      * @return  string
      */
-    function GetHTML()
+    function GetHTML($mode = NULL)
     {
-        return $this->_html;
+        if (isset($mode)) {
+            return $this->_html[$mode];
+        } else {
+            return $this->_html;
+        }
     } // end func GetHTML
 
 } // end class BionsCommon
@@ -504,7 +506,7 @@ class HTMLtmp {
      * @var    string
      * @access private
      */
-    var $_html = '';
+    var $_html;
 
     /**
      * Class constructor
