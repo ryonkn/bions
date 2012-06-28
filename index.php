@@ -38,12 +38,12 @@ if (ereg("^[0-9]+$", $_GET['time']) and $_GET['time'] > 0 and $_GET['time'] <= 2
 // Connect DB
 $dsn = array( 'phptype'    => DB_TYPE,
               'dbsyntax'   => DB_SYNT,
-              'protocol'   => DB_PROT, 
+              'protocol'   => DB_PROT,
               'database'   => DB_NAME,
-              'username'   => DB_USER, 
-              'password'   => DB_PASS, 
+              'username'   => DB_USER,
+              'password'   => DB_PASS,
               'hostspec'   => DB_HOST,
-              'proto_opts' => DB_OPTS ); 
+              'proto_opts' => DB_OPTS );
 
 $db = DB::connect($dsn);
 

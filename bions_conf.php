@@ -8,7 +8,7 @@
 
 // DB setup
 define("DB_TYPE",            "pgsql");              /* MySQL = mysql , PostgreSQL = pgsql */
-define("DB_SYNT",            ""); 
+define("DB_SYNT",            "");
 define("DB_PROT",            "unix()");             /* tcp or unix                        */
 define("DB_HOST",            "");                   /* hostname:port                      */
 define("DB_NAME",            "snort");

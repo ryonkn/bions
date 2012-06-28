@@ -25,7 +25,7 @@ BIONSはGNU GPLに準拠したフリーソフトウェアです。GPLに従い�
 
    *PHP (http://www.php.net/)
        ソースからインストールする場合は、./configure のオプションに、
-       --with-gd が必要です。また、RDBMSを利用する為、mysql か 
+       --with-gd が必要です。また、RDBMSを利用する為、mysql か
        postgresqlを使用するオプションが必要です。詳しくは、
        <?php phpinfo(); ?> 等で確認して下さい。
 
@@ -88,7 +88,7 @@ JPGRAPH_PATH
 SENSORS
         非固定IPで運用されている場合は、Sensorsが複数表示されます。
         その場合は、"false"に設定すると、合計値のみを表示します。
-        また、snort.confのoutputプラグイン設定を 
+        また、snort.confのoutputプラグイン設定を
           output database: alert, postgresql, user=snort dbname=snort sensor_name=sensor1
         とする事でも可能です。
 
@@ -104,5 +104,5 @@ BIONSについての、ご意見・ご要望・バグレポートは、
 Ryo Nakano <ryo@ryonkn.com> までお願いします。
 
 
--- 
+--
 Ryo Nakano / <ryo@ryonkn.com>
