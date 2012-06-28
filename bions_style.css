@@ -34,7 +34,10 @@ a:active {
   color: #FF9900;
   text-decoration: underline;
 }
-
+p {
+  margin: 0px;
+  padding: 0px;
+}
 td {
   font-size: 90%;
 }

@@ -1,18 +1,20 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.1a                      |
+// | BIONS -believe it or not , snort-  Version 0.2                       |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
 //
 
 // DB setup
-define("DB_TYPE",            "pgsql");      /* MySQL = mysql , PostgreSQL = pgsql */
-define("DB_HOST",            "127.0.0.1");
-define("DB_PORT",            "5432");       /* default : MySQL = 3306 , PostgreSQL = 5432 */
+define("DB_TYPE",            "pgsql");              /* MySQL = mysql , PostgreSQL = pgsql */
+define("DB_SYNT",            ""); 
+define("DB_PROT",            "unix()");             /* tcp or unix                        */
+define("DB_HOST",            "");                   /* hostname:port                      */
+define("DB_NAME",            "snort");
 define("DB_USER",            "snort");
 define("DB_PASS",            "snort");
-define("DB_NAME",            "snort");
+define("DB_OPTS",            "");
 
 // Jpgraph path
 define("JPGRAPH_PATH",       "jpgraph-1.14/src");

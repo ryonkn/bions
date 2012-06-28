@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.1a                      |
+// | BIONS -believe it or not , snort-  Version 0.2                       |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -15,16 +15,21 @@ require_once "bions_conf.php";
 // Common file require
 require_once "bions_common.php";
 
-// Get cureent time
-$current = getdate();
-
-// Get Signature ID and Signature name from $_GET
-if ($_SERVER['REQUEST_METHOD'] == "GET" and ereg("^[0-9]+$", $_GET['signature']) ) {
+// Get Signature ID and Signature name and Now from $_GET
+if (ereg("^[0-9]+$", $_GET['signature']) and $_GET['signature'] > 0 and $_GET['signature'] <= 2147483647) {
     $signature = $_GET['signature'];
 }
 
-if ($_SERVER['REQUEST_METHOD'] == "GET" and ereg("^[0-9]+$", $_GET['sid']) ) {
+if (ereg("^[0-9]+$", $_GET['sid']) and $_GET['sid'] > 0 and $_GET['sid'] <= 2147483657) {
     $sid = $_GET['sid'];
+}
+
+if (ereg("^[0-9]+$", $_GET['time']) and $_GET['time'] > 0 and $_GET['time'] <= 2147483657) {
+    $current = getdate($_GET['time']);
+    $now     = false;
+} else {
+    $current = getdate();
+    $now     = true;
 }
 
 // Session Start
@@ -34,18 +39,26 @@ session_start();
 $_SESSION['currenttime'] = $current;
 
 // Connect DB
-// dsn = DB-Type://DB-User:DB-Pass@DB-Host:DB-Port/DB-Name
-$db = DB::connect(DB_TYPE."://".DB_USER.":".DB_PASS."@".DB_HOST.":".DB_PORT."/".DB_NAME);
+$dsn = array( 'phptype'    => DB_TYPE,
+              'dbsyntax'   => DB_SYNT,
+              'protocol'   => DB_PROT, 
+              'database'   => DB_NAME,
+              'username'   => DB_USER, 
+              'password'   => DB_PASS, 
+              'hostspce'   => DB_HOST,
+              'proto_opts' => DB_OPTS ); 
+
+$db = DB::connect($dsn);
 
 if (DB::isError($db)) {
-    die ($db->getMessage());
+    die ($db->getMessage() ."<br>".$db->getDebugInfo());
 }
 
 // Alerts list and Current Signature Name
 $alerts = new AlertsList();
 $alerts->SetCurrentSignature($signature);
 $alerts->SetCrrentSensor($sid);
-$alerts->SetCurrentTime($_SESSION['currenttime'][0]);
+$alerts->SetCurrentTime($_SESSION['currenttime'][0], $now);
 $alerts->DbQuery($db);
 $htmldata['alertslist']   = $alerts->GetHTML();
 $htmldata['currentalert'] = $alerts->GetCurrentSigname();
@@ -55,6 +68,7 @@ unset($alerts);
 $sensor = new SensorsList();
 $sensor->SetCurrentSignature($signature);
 $sensor->SetCrrentSensor($sid);
+$sensor->SetCurrentTime($_SESSION['currenttime'][0], $now);
 $sensor->DbQuery($db);
 $htmldata['sensors'] = $sensor->GetHTML();
 unset($sensor);

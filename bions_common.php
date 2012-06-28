@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.1a                      |
+// | BIONS -believe it or not , snort-  Version 0.2                       |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -168,7 +168,7 @@ class BionsGraph extends BionsCommon {
             $result = $db->getOne($sql);
 
             if (DB::isError($result)) {
-              die ($result->getMessage());
+              die ($result->getMessage() ."<br>".$result->getDebugInfo());
             }
 
             $label = date($timelabel,mktime($times['hour']['s'], 0,0 , $times['month']['s'], $times['day']['s'], $times['year']['s']));
@@ -177,7 +177,7 @@ class BionsGraph extends BionsCommon {
             $data['times'][]  = $label;
 
             if (DEBUG) {
-                echo $label.",".$result."=".$sql."<br>\n";
+                echo $label.",".$result."=".$sql."<br />\n";
             }
 
             $times[$var]['s']++;
@@ -204,13 +204,6 @@ class BionsGraph extends BionsCommon {
 class AlertsList extends BionsCommon {
 
     /**
-     * Epoch of current time
-     * @var    int
-     * @access private
-     */
-    var $_time;
-
-    /**
      * Current Signature name
      * @var    string
      * @access private
@@ -225,21 +218,9 @@ class AlertsList extends BionsCommon {
     function AlertsList()
     {
         BionsCommon::BionsCommon();
-        $this->_time    = 0;
         $this->_signame = '';
         return true;
     } // end constructor
-
-    /**
-     * Set epoch of Current time
-     * @param   int    $current
-     * @access  public
-     */
-    function SetCurrentTime($current = 0)
-    {
-        $this->_time      = $current;
-        return true;
-    } // end func SetCurrentTime
 
     /**
      * Get Current Signature name
@@ -258,16 +239,27 @@ class AlertsList extends BionsCommon {
      */
     function DbQuery($db)
     {
-        $sql = "SELECT sig_id,sig_name,sig_sid,coalesce(sig_class_name,'unclassified'),count(*) ".
-               "From signature ".
-               "LEFT JOIN sig_class ON signature.sig_class_id = sig_class.sig_class_id ".
-               "INNER JOIN event on signature.sig_id = event.signature ".
-               "where timestamp > '".date("Y/m/d H:i:s",$this->_time - 86400)."' and timestamp <= '".date("Y/m/d H:i:s",$this->_time)."' ".
-               "group by signature.sig_id,signature.sig_name,signature.sig_sid,sig_class.sig_class_id,sig_class.sig_class_name";
+        $sql  = "SELECT sig_id,sig_name,sig_sid,coalesce(sig_class_name,'unclassified'),count(*) as cnt ".
+                "From signature ".
+                "LEFT JOIN sig_class ON signature.sig_class_id = sig_class.sig_class_id ".
+                "INNER JOIN event on signature.sig_id = event.signature ".
+                "where timestamp > '".date("Y/m/d H:i:s",$this->_time - 86400)."' and timestamp <= '".date("Y/m/d H:i:s",$this->_time)."' ";
+
+        if ($this->_sensor > 0) {
+            $sql .= "and sid = ".$this->_sensor." ";
+        }
+
+        $sql .= "group by signature.sig_id,signature.sig_name,signature.sig_sid,sig_class.sig_class_id,sig_class.sig_class_name ".
+                " order  by cnt desc;";
 
         $result = $db->getAll($sql);
 
-        if(!DB::isError($result)) {
+        if (DEBUG) {
+            var_dump($result);
+            echo "<br />".$sql."<br />\n";
+        }
+
+        if (!DB::isError($result)) {
 
             $result[-1] = array(0, 'All Alerts', '&nbsp;', 'All Classification', '&nbsp;');
             $count = count($result) - 1;
@@ -279,17 +271,17 @@ class AlertsList extends BionsCommon {
 
                 $this->_html .= '<tr>';
 
-                if( $result[$i][2] > 0 and $result[$i][2] < 1000000 ) {
+                if ($result[$i][2] > 0 and $result[$i][2] < 1000000) {
                     $this->_html      .= $this->_GenerateTD('<a href = "'.SNORTORG.$result[$i][2].'">Snort:'.$result[$i][2].'</a>');
                 } else {
                     $this->_html      .= $this->_GenerateTD('&nbsp;');
                 }
 
-                if( $this->_signature == $result[$i][0]) {
+                if ($this->_signature == $result[$i][0]) {
                     $this->_html      .= $this->_GenerateTD($result[$i][1],'currentalert');
                     $this->_signame    = $result[$i][1];
                 } else {
-                    $linkTD            = $this->_GenerateLink($result[$i][1] ,$result[$i][0] ,$this->_sensor);
+                    $linkTD            = $this->_GenerateLink($result[$i][1] ,$result[$i][0] ,$this->_sensor, $this->_time, $this->_now);
                     $this->_html      .= $this->_GenerateTD($linkTD);
                 }
 
@@ -300,7 +292,7 @@ class AlertsList extends BionsCommon {
             }
 
         } else {
-           die ($result->getMessage());
+           die ($result->getMessage() ."<br>".$result->getDebugInfo());
         }
         return true;
     } // end func DbQuery
@@ -343,12 +335,17 @@ class SensorsList extends BionsCommon {
      */
     function DbQuery($db)
     {
-        if(SENSORS) {
+        if (SENSORS) {
 
             $sql = "SELECT sid,hostname,interface FROM sensor order by sid;";
             $result = $db->getAll($sql);
 
-            if(!DB::isError($result)) {
+            if (DEBUG) {
+                var_dump($result);
+                echo "<br />".$sql."<br />\n";
+            }
+
+            if (!DB::isError($result)) {
 
                 $result[-1] = array(0, 'All Sensors', 'All');
                 $count = count($result) - 1;
@@ -358,16 +355,16 @@ class SensorsList extends BionsCommon {
                     $name = htmlspecialchars( $result[$i][1].'%'.$result[$i][2] , ENT_QUOTES);
 
                     $this->_html .= '[';
-                    if($this->_sensor == $result[$i][0]) {
+                    if ($this->_sensor == $result[$i][0]) {
                         $this->_html .= '<span class="currentsensor">'.$name.'</span>';
                     } else {
-                        $this->_html .= $this->_GenerateLink($name, $this->_signature, $result[$i][0]);
+                        $this->_html .= $this->_GenerateLink($name, $this->_signature, $result[$i][0], $this->_time, $this->_now);
                     }
                     $this->_html .= ']&nbsp;';
 
                 }
             } else {
-                die ($result->getMessage());
+                die ($result->getMessage() ."<br>".$result->getDebugInfo());
             }
 
         } else {
@@ -398,6 +395,20 @@ class BionsCommon {
     var $_sensor;
 
     /**
+     * Epoch of current time
+     * @var    int
+     * @access private
+     */
+    var $_time;
+
+    /**
+     * Current time is now
+     * @var    bool
+     * @access private
+     */
+    var $_now;
+
+    /**
      * BaseURL of Link
      * @var    string
      * @access private
@@ -420,6 +431,8 @@ class BionsCommon {
     {
         $this->_signature = 0;
         $this->_sensor    = 0;
+		$this->_time      = 0;
+		$this->_now       = true;
         $this->_url       = $_SERVER['SCRIPT_NAME'];
         $this->_html      = '';
         return true;
@@ -448,32 +461,52 @@ class BionsCommon {
     } // end func SetCrrentSensor
 
     /**
+     * Set epoch of Current time
+     * @param   int    $current
+     * @param   bool   $now
+     * @access  public
+     */
+    function SetCurrentTime($current = 0, $now = true)
+    {
+        $this->_time      = $current;
+		$this->_now       = $now;
+        return true;
+    } // end func SetCurrentTime
+
+    /**
      * Generate HTML link
      * @param   string  $link_name
      * @param   int     $signature
      * @param   int     $sensor
+     * @param   int     $time
+     * @param   bool    $now
      * @access  private
      * @return  string
      */
-    function _GenerateLink($link_name , $signature, $sid)
+    function _GenerateLink($link_name , $signature, $sid ,$time = 0, $now = true )
     {
         $url = $this->_url;
         $first = true;
 
-        if( $signature > 0 ) {
+        if ($signature > 0) {
             $url   .= '?signature='.$signature;
             $first  = false;
         }
 
-        if( $sid > 0 ) {
-
-            if($first) {
-                $url   .= '?sid='.$sid;
-                $first  = false;
-            } else {
-                $url .= '&sid='.$sid;
-            }
+        if ($sid > 0 and $first) {
+            $url   .= '?sid='.$sid;
+            $first  = false;
+        } elseif ($sid > 0) {
+            $url .= '&sid='.$sid;
         }
+
+        if (!$now and $first) {
+            $url   .= '?time='.$time;
+            $first  = false;
+        } elseif (!$now) {
+            $url .= '&time='.$time;
+        }
+
         $link = '<a href = "'.$url.'">'.$link_name.'</a>';
 
         return $link;
