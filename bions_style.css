@@ -38,11 +38,12 @@ p {
   margin: 0px;
   padding: 0px;
 }
+
 td {
   font-size: 90%;
 }
 
-table.alertlist {
+table.list {
   border: solid 1px #666666;
   border-collapse: separate;
 }
@@ -62,9 +63,15 @@ td.currentalert {
   color: #FF0000;
 }
 
-td.alertlist {
+td.list {
   border: 1px dashed #666666;
   padding: 3px;
+}
+
+td.center {
+  border: 1px dashed #666666;
+  padding: 3px;
+  text-align: center;
 }
 
 .currentsensor {

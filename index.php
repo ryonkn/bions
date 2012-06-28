@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.2                       |
+// | BIONS -believe it or not , snort-  Version 0.3                       |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -15,6 +15,9 @@ require_once "bions_conf.php";
 // Common file require
 require_once "bions_common.php";
 
+// Session Start
+session_start();
+
 // Get Signature ID and Signature name and Now from $_GET
 if (ereg("^[0-9]+$", $_GET['signature']) and $_GET['signature'] > 0 and $_GET['signature'] <= 2147483647) {
     $signature = $_GET['signature'];
@@ -25,18 +28,12 @@ if (ereg("^[0-9]+$", $_GET['sid']) and $_GET['sid'] > 0 and $_GET['sid'] <= 2147
 }
 
 if (ereg("^[0-9]+$", $_GET['time']) and $_GET['time'] > 0 and $_GET['time'] <= 2147483657) {
-    $current = getdate($_GET['time']);
-    $now     = false;
+    $_SESSION['currenttime'] = getdate($_GET['time']);
+    $now                     = false;
 } else {
-    $current = getdate();
-    $now     = true;
+    $_SESSION['currenttime'] = getdate();
+    $now                     = true;
 }
-
-// Session Start
-session_start();
-
-// Set time to SESSION
-$_SESSION['currenttime'] = $current;
 
 // Connect DB
 $dsn = array( 'phptype'    => DB_TYPE,
@@ -72,6 +69,16 @@ $sensor->SetCurrentTime($_SESSION['currenttime'][0], $now);
 $sensor->DbQuery($db);
 $htmldata['sensors'] = $sensor->GetHTML();
 unset($sensor);
+
+// Get TimeList
+$timelist = new TimeList();
+$timelist->SetCurrentSignature($signature);
+$timelist->SetCrrentSensor($sid);
+$timelist->SetCurrentTime($_SESSION['currenttime'][0], $now);
+$timelist->Generate();
+$htmldata['timelist'] = $timelist->GetHTML();
+$htmldata['nowtime'] = $timelist->NowTime();
+unset($timelist);
 
 // Daily graph
 $daily = new BionsGraph('Daily');

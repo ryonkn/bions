@@ -12,6 +12,17 @@
 <p>{sensors}</p>
 <h3>Alerts</h3>
 <p class="currentsensor">{currentalert}</p>
+<h3>Time List</h3>
+<table summary="Time List" class="list">
+<thead><tr>
+<th class="header">&lt;- Prev</th>
+<th class="header">{nowtime}</th>
+<th class="header">Next -&gt;</th>
+</tr></thead>
+<tbody>
+{timelist}
+</tbody>
+</table>
 <hr />
 <h3>Daily Graph</h3>
 <div>{dailygraph}</div>
@@ -29,7 +40,7 @@
 <div>{yearlygraph}</div>
 <div>From <strong>{yearlyfrom}</strong>  To <strong>{yearlyto}</strong></div>
 <hr />
-<table summary="Alerts List" class="alertlist">
+<table summary="Alerts List" class="list">
 <thead><tr>
 <th class="header">Signature Link</th>
 <th class="header">Alert Message</th>
@@ -40,6 +51,6 @@
 {alertslist}
 </tbody>
 </table>
-<div class="footer">BIONS -believe it or not , snort-  version 0.2  ( by Ryo Nakano )</div>
+<div class="footer">BIONS -believe it or not , snort-  Version 0.3</div>
 </body>
 </html>

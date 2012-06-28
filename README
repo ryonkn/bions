@@ -1,4 +1,4 @@
-              BIONS -believe it or not , snort- version 0.2
+              BIONS -believe it or not , snort- version 0.3
 
               Copyright(C) 2004 Ryo Nakano <ryo@ryonkn.com>
 
@@ -62,25 +62,35 @@ $ tar xvzf ../jpgraph-1.xx.tar.gz
 BIONSの設定ファイル(bions_conf.php)を編集します。
 
 *データベース関連の設定
-DB_TYPE.....PostgreSQL = pgsql , MySQL = mysql
-DB_HOST.....DBが稼動しているサーバのアドレス
-DB_PORT.....Postgreseql = 5432 , MySQL = 3306
-            (デフォルトポートの場合は、""でも可)
-DB_USER.....データベースへ接続する際のユーザ名
-DB_PASS.....データベースへ接続する際のパスワード
-            (設定してない場合は、"")
-DB_NAME.....データベース名
+DB_TYPE
+        PostgreSQL = pgsql , MySQL = mysql
+DB_SYNT
+        データベース関連構文、通常は空白""で問題ありません。
+DB_PROT
+        DBへの接続方法 tcp/unix/unix()/unix(unixドメインソケットのパス)
+DB_HOST
+        DBが稼動しているサーバのアドレス(localhost:3306)等、unixドメインソケット接続の場合は空白
+DB_NAME
+        データベース名
+DB_USER
+        データベースへ接続する際のユーザ名
+DB_PASS
+        データベースへ接続する際のパスワード(設定してない場合は、"")
+DB_OPTS
+        データベースへ接続するオプション、通常は空白""で問題ありません。
+
 
 *jpgraphのインストールパス
-JPGRAPH_PATH.....jpgraph.phpが存在するパス
+JPGRAPH_PATH
+        jpgraph.phpが存在するパス
 
 *センサー
-SENSORS.....非固定IPで運用されている場合は、Sensorsが複数表示されます。
-            その場合は、"false"に設定すると、合計値のみを表示します。
-            また、snort.confのoutputプラグイン設定を 
-            output database: alert, postgresql, user=snort \
-              dbname=snort sensor_name=sensor1
-            とする事でも可能です。
+SENSORS
+        非固定IPで運用されている場合は、Sensorsが複数表示されます。
+        その場合は、"false"に設定すると、合計値のみを表示します。
+        また、snort.confのoutputプラグイン設定を 
+          output database: alert, postgresql, user=snort dbname=snort sensor_name=sensor1
+        とする事でも可能です。
 
 
 最新情報

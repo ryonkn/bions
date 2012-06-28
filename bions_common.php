@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------+
-// | BIONS -believe it or not , snort-  Version 0.2                       |
+// | BIONS -believe it or not , snort-  Version 0.3                       |
 // +----------------------------------------------------------------------+
 // | Author: Ryo Nakano <ryo@ryonkn.com>                                  |
 // +----------------------------------------------------------------------+
@@ -139,7 +139,6 @@ class BionsGraph extends BionsCommon {
     function DbQuery($db, $var, $count, $timelabel)
     {
         $times  = $this->_times;
-        unset($this->_times);
 
         $times[$var]['s'] = $times[$var]['s'] -$count;
         $times[$var]['e'] = $times[$var]['e'] -$count + 1;
@@ -158,11 +157,11 @@ class BionsGraph extends BionsCommon {
             $sql  = "SELECT count(*) FROM event WHERE timestamp >= '".$starttime."' AND timestamp  < '".$endtime."'";
 
             if ($this->_signature > 0) {
-                $sql .= " and signature = ".$this->_signature;
+                $sql .= " AND signature = ".$this->_signature;
             }
 
             if ($this->_sensor> 0) {
-                $sql .= " and sid = ".$this->_sensor;
+                $sql .= " AND sid = ".$this->_sensor;
             }
 
             $result = $db->getOne($sql);
@@ -173,8 +172,8 @@ class BionsGraph extends BionsCommon {
 
             $label = date($timelabel,mktime($times['hour']['s'], 0,0 , $times['month']['s'], $times['day']['s'], $times['year']['s']));
 
-            $data['alerts'][] = $result;
-            $data['times'][]  = $label;
+            $_SESSION[$this->_mode]['alerts'][] = $result;
+            $_SESSION[$this->_mode]['times'][]  = $label;
 
             if (DEBUG) {
                 echo $label.",".$result."=".$sql."<br />\n";
@@ -184,9 +183,7 @@ class BionsGraph extends BionsCommon {
             $times[$var]['e']++;
         }
 
-        $_SESSION[$this->_mode] = $data;
         $_SESSION['graphcount']++;
-        unset($data);
 
         $this->_html['graph'] = '<img src="'.GRAPH_PHP.'?mode='.$this->_mode.'" alt="'.$this->_mode.' Graph" width="'.WIDTH.'" height="'.HEIGHT.'" />';
         $this->_html['from'] = $this->_fromtime;
@@ -239,18 +236,17 @@ class AlertsList extends BionsCommon {
      */
     function DbQuery($db)
     {
-        $sql  = "SELECT sig_id,sig_name,sig_sid,coalesce(sig_class_name,'unclassified'),count(*) as cnt ".
-                "From signature ".
-                "LEFT JOIN sig_class ON signature.sig_class_id = sig_class.sig_class_id ".
-                "INNER JOIN event on signature.sig_id = event.signature ".
-                "where timestamp > '".date("Y/m/d H:i:s",$this->_time - 86400)."' and timestamp <= '".date("Y/m/d H:i:s",$this->_time)."' ";
+        $sql  = "SELECT sig_id, sig_name, sig_sid ,coalesce(sig_class_name, 'unclassified'), count(*) as cnt ".
+                "FROM  ( signature NATURAL LEFT JOIN sig_class ), event ".
+                "WHERE signature.sig_id = event.signature AND ".
+                "timestamp > '".date("Y/m/d H:i:s",$this->_time - 86400)."' AND timestamp <= '".date("Y/m/d H:i:s",$this->_time)."' ";
 
         if ($this->_sensor > 0) {
-            $sql .= "and sid = ".$this->_sensor." ";
+            $sql .= "AND sid = ".$this->_sensor." ";
         }
 
-        $sql .= "group by signature.sig_id,signature.sig_name,signature.sig_sid,sig_class.sig_class_id,sig_class.sig_class_name ".
-                " order  by cnt desc;";
+        $sql .= "GROUP BY signature.sig_id, signature.sig_name, signature.sig_sid, sig_class.sig_class_name ".
+                "ORDER BY cnt DESC;";
 
         $result = $db->getAll($sql);
 
@@ -304,7 +300,7 @@ class AlertsList extends BionsCommon {
      * @access  private
      * @return  string
      */
-    function _GenerateTD($contents,$class = 'alertlist')
+    function _GenerateTD($contents,$class = 'list')
     {
       $td = '<td class = "'.$class.'">'.$contents.'</td>';
       return $td;
@@ -337,7 +333,7 @@ class SensorsList extends BionsCommon {
     {
         if (SENSORS) {
 
-            $sql = "SELECT sid,hostname,interface FROM sensor order by sid;";
+            $sql = "SELECT sid,hostname,interface FROM sensor ORDER BY sid;";
             $result = $db->getAll($sql);
 
             if (DEBUG) {
@@ -373,6 +369,87 @@ class SensorsList extends BionsCommon {
         return true;
     } // end func DbQuery
 } // end class SensorsList
+
+
+/**
+ * Generate Time List for snort
+ */
+class TimeList extends BionsCommon {
+
+    /**
+     * Class constructor
+     * @param    none
+     * @access   public
+     */
+    function TimeList()
+    {
+        BionsCommon::BionsCommon();
+        return true;
+    } // end constructor
+
+    /**
+     * Return Currenttime
+     * @param    none
+     * @access   public
+     * @return   string
+     */
+    function NowTime()
+    {
+        return date("Y/m/d H:i:s", $this->_time);
+    } // end func NowTime
+
+    /**
+     * GenerateTD
+     * @param    string   $mode
+     * @param    int      $var
+     * @param    bool     $now
+     * @access   private
+     * @return   string
+     */
+    function _GenerateTD($mode, $val, $now)
+    {
+        $time = getdate($this->_time);
+        $time[$mode] += $val;
+
+        $epoch = mktime($time['hours'], $time['minutes'], $time['seconds'], $time['mon'], $time['mday'], $time['year']);
+
+        if ($now) {
+             $linkname  = 'now';
+        } else {
+            $linkname = date("Y/m/d H:i:s", $epoch);
+        }
+
+        return '<td class="center">'.$this->_GenerateLink($linkname, $this->_signature, $this->_sensor, $epoch, $now)."</td>";;
+    } // end func _GenerateTD
+
+    /**
+     * Generate Alerts List HTML from DB
+     * @access  public
+     */
+    function Generate()
+    {
+        $time = getdate($this->_time);
+
+        $this->_html  = '<tr>';
+        $this->_html .= $this->_GenerateTD('mday', -1, false);
+        $this->_html .= $this->_GenerateTD('mday',  0, true);
+        $this->_html .= $this->_GenerateTD('mday',  1, false);
+        $this->_html .= "</tr>\n";
+
+        $this->_html .= '<tr>';
+        $this->_html .= $this->_GenerateTD('mday', -7, false);
+        $this->_html .='<td class="center">&lt;- 1 Week -&gt;</td>';
+        $this->_html .= $this->_GenerateTD('mday',  7, false);
+        $this->_html .= "</tr>\n";
+
+        $this->_html .= '<tr>';
+        $this->_html .= $this->_GenerateTD('mon', -1, false);
+        $this->_html .='<td class="center">&lt;-1 Month -&gt;</td>';
+        $this->_html .= $this->_GenerateTD('mon',  1, false);
+        $this->_html .= "</tr>\n";
+
+    } // end func Generate
+} // end class TimeList
 
 
 /**
@@ -431,8 +508,8 @@ class BionsCommon {
     {
         $this->_signature = 0;
         $this->_sensor    = 0;
-		$this->_time      = 0;
-		$this->_now       = true;
+        $this->_time      = 0;
+        $this->_now       = true;
         $this->_url       = $_SERVER['SCRIPT_NAME'];
         $this->_html      = '';
         return true;
@@ -469,7 +546,7 @@ class BionsCommon {
     function SetCurrentTime($current = 0, $now = true)
     {
         $this->_time      = $current;
-		$this->_now       = $now;
+        $this->_now       = $now;
         return true;
     } // end func SetCurrentTime
 
