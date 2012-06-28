@@ -1,0 +1,76 @@
+h1 {
+	padding: 5px 30px 5px 30px;
+	border-right: solid 2px #333333;
+	border-bottom: solid 2px #333333;
+	background-color: #808080;
+	color: #FFFFFF;
+	text-decoration: underline;
+}
+h1 span#sub {
+	font-size: 70%;
+}
+h3 {
+    margin: 10px,0px,0px,0px;
+}
+
+a:link {
+  color: #0000FF;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #0000FF;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #FF9900;
+  text-decoration: underline;
+}
+
+a:active {
+  color: #FF9900;
+  text-decoration: underline;
+}
+
+td {
+  font-size: 90%;
+}
+
+table.alertlist {
+  border: solid 1px #666666;
+  border-collapse: separate;
+}
+
+th.header {
+  border: 1px groove #333333;
+  padding: 3px;
+  color: #000033;
+  font-weight: bold;
+  background-color: #CCCCCC;
+  text-align: center;
+}
+
+td.currentalert {
+  border: 1px dashed #FF0000;
+  padding: 3px;
+  color: #FF0000;
+}
+
+td.alertlist {
+  border: 1px dashed #666666;
+  padding: 3px;
+}
+
+.currentsensor {
+  color: #FF0000;
+}
+
+.footer {
+	padding: 5px 30px;
+	border-right: solid 2px #333333;
+	border-bottom: solid 2px #333333;
+	background-color: #808080;
+	color: #FFFFFF;
+	margin-top: 20px;
+}
